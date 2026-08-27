@@ -26,11 +26,11 @@ El servidor no guarda información de la sesión. Cada petición enviada por el 
 **3. Almacenable en caché (Cacheable)**
 Las respuestas deben indicar si sus datos pueden almacenarse temporalmente. Esto evita peticiones repetitivas, reduce el tráfico y mejora el rendimiento.
 
-**4. Sistema en capas (Layered System)**
-La arquitectura se divide en niveles. El cliente interactúa con el sistema sin saber si se comunica con el servidor final o con intermediarios (como proxies o balanceadores).
-
-**5. Interfaz uniforme (Uniform Interface)**
+**4. Interfaz uniforme (Uniform Interface)**
 Es la regla principal de REST. Estandariza la comunicación utilizando rutas consistentes (URIs) y los métodos clásicos de HTTP (GET, POST, PUT, DELETE).
+
+**5. Sistema en capas (Layered System)**
+La arquitectura se divide en niveles. El cliente interactúa con el sistema sin saber si se comunica con el servidor final o con intermediarios (como proxies o balanceadores).
 
 **6. Código bajo demanda (Code on Demand - Opcional)**
 Es el único requisito opcional. Permite al servidor enviar código ejecutable (como scripts) para ampliar temporalmente las funciones del cliente.
@@ -41,3 +41,10 @@ Es el único requisito opcional. Permite al servidor enviar código ejecutable (
 Un Web Service  es un sistema diseñado para que dos máquinas o aplicaciones se comuniquen entre sí a través de una red. Utiliza estándares y protocolos abiertos (como HTTP, XML, SOAP o JSON) para el intercambio de información.
 
 ![Web Service](https://programarfacil.com/wp-content/uploads/2015/12/web-services.png)
+
+## Referencias Bibliográficas
+
+*   IBM. (s.f.). *¿Qué es una API?*. Recuperado de https://www.ibm.com/es-es/topics/api
+*   REST API Tutorial. (s.f.). *What is REST?*. Recuperado de https://restfulapi.net/
+*   Kasingye, M. (s.f.). *The 6 principles of REST: a deep-dive with real examples*. Medium. Recuperado de https://michaelkasingye.medium.com/the-6-principles-of-rest-a-deep-dive-with-real-examples-6f72aa60bf05
+*   Programar Fácil. (s.f.). *¿Qué son los servicios web?*. Recuperado de https://programarfacil.com/podcast/59-que-son-los-servicios-web/#Que_es_un_servicio_web
