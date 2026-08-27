@@ -1,0 +1,8 @@
+POST https://jsonplaceholder.typicode.com/posts HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Tarea Peticion HTTP",
+  "body": "Probando el envio de datos a JsonPlaceHolder",
+  "NumControl": 23100201
+}
