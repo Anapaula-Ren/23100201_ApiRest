@@ -11,16 +11,15 @@ app.use(morgan('dev'));
 const validarRutaPermitida = (req, res, next) => {
     const ruta = req.url;
 
-    // Permitimos la ruta raíz '/' o cualquier ruta que empiece con '/saludo'
+  
     if (ruta === '/' || ruta.startsWith('/saludo')) {
-        return next(); // Todo bien, pase usted
+        return next(); 
     }
 
-    // Si escribieron cualquier otra cosa (como /pene, /basura, /loquesea), bloqueamos
-    res.status(403).send('🛑 ¡Acceso denegado! Palabra no permitida en la ruta.');
+    res.status(403).send(' Lo siento, esa no es la ruta correcta');
 };
 
-// Activamos el middleware para que filtre todo lo que entre
+
 app.use(validarRutaPermitida);
 const miRuta= require('./routes/routes'); 
 
