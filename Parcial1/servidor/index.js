@@ -6,7 +6,19 @@ const PORT = 3000;
 
 app.use(express.json());
 
-app.use(morgan('dev'));
+app.use(morgan((tokens, req, res) => {
+    // Obtenemos la fecha y hora local actual bien formateada
+    const horaLocal = new Date().toLocaleString(); 
+
+    return [
+        `[${horaLocal}]`, 
+        tokens.method(req, res), 
+        tokens.url(req, res), 
+        tokens.status(req, res), 
+        '-', 
+        tokens['response-time'](req, res), 'ms'
+    ].join(' ');
+}));
 
 const validarRutaPermitida = (req, res, next) => {
     const ruta = req.url;
