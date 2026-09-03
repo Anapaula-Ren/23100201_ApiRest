@@ -16,7 +16,7 @@ const validarRutaPermitida = (req, res, next) => {
         return next(); 
     }
 
-    res.status(403).send(' Lo siento, esa no es la ruta correcta');
+    res.status(403).send(' Lo siento, esa no es la ruta correcta. debes poner /saludo/tu nombre');
 };
 
 
