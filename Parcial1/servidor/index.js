@@ -1,11 +1,15 @@
 const express = require('express');
 const morgan = require('morgan');
-const multer = require('multer'); // 1. Importar multer
+const multer = require('multer');
+const path = require('path'); // 1. Importar multer
 const app = express();
 const PORT = 3000;
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
+
 
 app.use(morgan((tokens, req, res) => {
     // Obtenemos la fecha y hora local actual bien formateada
