@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/'); 
     },
     filename: (req, file, cb) => {
-        // Le ponemos un nombre único combinando la fecha actual y el nombre original
+        
         const nombreUnico = Date.now() + '-' + file.originalname;
         cb(null, nombreUnico);
     }
@@ -38,17 +38,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
-
 app.post('/subir', upload.single('archivo'), (req, res) => {
     try {
-        // Si no viene archivo, req.file vendrá indefinido
+        
         if (!req.file) {
             return res.status(400).json({ error: 'No se subió ningún archivo' });
         }
 
         res.json({
-            mensaje: '¡Archivo subido con éxito al servidor! 🚀',
+            mensaje: '¡Archivo subido con éxito al servidor! ',
             detallesDelArchivo: {
                 nombreOriginal: req.file.originalname,
                 nombreGuardado: req.file.filename,
@@ -60,6 +58,7 @@ app.post('/subir', upload.single('archivo'), (req, res) => {
         res.status(500).json({ error: 'Hubo un error al subir el archivo' });
     }
 });
+
 const validarRutaPermitida = (req, res, next) => {
     const ruta = req.url;
 
