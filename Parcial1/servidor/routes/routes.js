@@ -16,7 +16,7 @@ router.get('/saludo/:nombre/pug', (req, res) => {
 });
 
 // 1. RUTA DE HATEOAS (Cierra bien su llave antes de la siguiente)
-router.get('/saludo/:nombre/hateoas', (req, res) => {
+router.get('/hateoas', (req, res) => {
     const nombreUsuario = req.params.nombre;
     
     const datosPropios = {
