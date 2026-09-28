@@ -1,0 +1,98 @@
+const express = require('express');
+const manejadorErrores = require('./middlewares/errores');
+const morgan = require('morgan');
+const multer = require('multer');
+const path = require('path'); 
+const app = express();
+const PORT = 3000;
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.json());
+
+
+app.use(morgan((tokens, req, res) => {
+    //obtenr fecha
+    const horaLocal = new Date().toLocaleString(); 
+
+    return [
+        `[${horaLocal}]`, 
+        tokens.method(req, res), 
+        tokens.url(req, res), 
+        tokens.status(req, res), 
+        '-', 
+        tokens['response-time'](req, res), 'ms'
+    ].join(' ');
+}));
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); 
+    },
+    filename: (req, file, cb) => {
+        
+        const nombreUnico = Date.now() + '-' + file.originalname;
+        cb(null, nombreUnico);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/subir', upload.single('archivo'), (req, res) => {
+    try {
+        
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se subió ningún archivo' });
+        }
+
+        res.json({
+            mensaje: '¡Archivo subido con éxito al servidor! ',
+            detallesDelArchivo: {
+                nombreOriginal: req.file.originalname,
+                nombreGuardado: req.file.filename,
+                ruta: req.file.path,
+                tamanioBytes: req.file.size
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Hubo un error al subir el archivo' });
+    }
+});
+
+/*const validarRutaPermitida = (req, res, next) => {
+    const ruta = req.url;
+
+  
+    if (ruta === '/' || ruta.startsWith('/saludo')) {
+        return next(); 
+    }
+
+    res.status(403).send(' Lo siento, esa no es la ruta correcta. debes poner /saludo/tu nombre');
+};
+app.use(validarRutaPermitida);*/
+const miRuta= require('./routes/routes'); 
+
+app.use ('/', miRuta); 
+
+/*app.get('/probar-error', async (req, res, next) => {
+    try {
+        // Simulamos un error (ej. falló la base de datos)
+        const errorBD = new Error('No se pudo conectar a la base de datos');
+        errorBD.statusCode = 500;
+        throw errorBD;
+    } catch (error) {
+        next(error); // Salta directo al manejador de errores
+    }
+});*/
+app.use((req, res, next) => {
+    const error = new Error(`La ruta ${req.originalUrl} no existe en este servidor.`);
+    error.statusCode = 404;
+    next(error); // Salta directo al manejador centralizado
+});
+
+app.use(manejadorErrores);
+
+app.listen(PORT, () => {
+    console.log(`Servidorsin express corriendo en http://localhost:${PORT}`);
+});
