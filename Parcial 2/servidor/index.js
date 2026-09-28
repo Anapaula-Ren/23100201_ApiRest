@@ -1,5 +1,6 @@
 const express = require('express');
 const manejadorErrores = require('./middlewares/errores');
+const authBasica = require('./middlewares/auth');
 const morgan = require('morgan');
 const multer = require('multer');
 const path = require('path'); 
@@ -11,6 +12,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 
+app.use(authBasica);
 
 app.use(morgan((tokens, req, res) => {
     //obtenr fecha
@@ -60,31 +62,12 @@ app.post('/subir', upload.single('archivo'), (req, res) => {
     }
 });
 
-/*const validarRutaPermitida = (req, res, next) => {
-    const ruta = req.url;
 
-  
-    if (ruta === '/' || ruta.startsWith('/saludo')) {
-        return next(); 
-    }
-
-    res.status(403).send(' Lo siento, esa no es la ruta correcta. debes poner /saludo/tu nombre');
-};
-app.use(validarRutaPermitida);*/
 const miRuta= require('./routes/routes'); 
 
 app.use ('/', miRuta); 
 
-/*app.get('/probar-error', async (req, res, next) => {
-    try {
-        // Simulamos un error (ej. falló la base de datos)
-        const errorBD = new Error('No se pudo conectar a la base de datos');
-        errorBD.statusCode = 500;
-        throw errorBD;
-    } catch (error) {
-        next(error); // Salta directo al manejador de errores
-    }
-});*/
+
 app.use((req, res, next) => {
     const error = new Error(`La ruta ${req.originalUrl} no existe en este servidor.`);
     error.statusCode = 404;

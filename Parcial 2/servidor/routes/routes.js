@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const halson = require('halson');
 
+
 router.get('/', (req, res) => {
     res.send('Hola escribe "/saludo/tu nombre" pa darte un saludin especial');
 });
