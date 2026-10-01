@@ -3,36 +3,18 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
 const manejadorErrores = require('./middlewares/errores');
-// const authBasica = require('./middlewares/auth');
+const { verificarToken } = require('./middlewares/auth');
 const morgan = require('morgan');
 const multer = require('multer');
 const app = express();
 
 
 const PORT = 3000;
-const apiKeyPermitida = process.env.API_KEY?.trim();
-
-if (!apiKeyPermitida) {
-    throw new Error('Configura API_KEY en el archivo .env.');
-}
-
-const validarApiKey = (req, res, next) => {
-    const apiKey = req.get('x-api-key');
-
-    if (!apiKey || apiKey !== apiKeyPermitida) {
-        return res.status(401).json({ error: 'API key ausente o inválida.' });
-    }
-
-    next();
-};
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
-
-// app.use(authBasica);
-app.use(validarApiKey);
 
 app.use(morgan((tokens, req, res) => {
     //obtenr fecha
@@ -61,7 +43,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post('/subir', upload.single('archivo'), (req, res) => {
+app.post('/subir', verificarToken, upload.single('archivo'), (req, res) => {
     try {
         
         if (!req.file) {
