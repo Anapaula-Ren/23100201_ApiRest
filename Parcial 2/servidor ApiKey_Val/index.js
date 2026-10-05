@@ -17,6 +17,10 @@ if (!apiKeyPermitida) {
 }
 
 const validarApiKey = (req, res, next) => {
+    if (req.path === '/formulario' && ['GET', 'POST'].includes(req.method)) {
+        return next();
+    }
+
     const apiKey = req.get('x-api-key');
 
     if (!apiKey || apiKey !== apiKeyPermitida) {
@@ -30,6 +34,7 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // app.use(authBasica);
 app.use(validarApiKey);
