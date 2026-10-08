@@ -3,10 +3,27 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
 const manejadorErrores = require('./middlewares/errores');
+const https= require ('https');
+const fs = require('fs');
 // const authBasica = require('./middlewares/auth');
 const morgan = require('morgan');
 const multer = require('multer');
+
+const opciones = {
+    key: fs.readFileSync(path.join(__dirname, "ssl/key.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "ssl/cert.pem"))
+};
 const app = express();
+
+
+
+app.get('/', (req, res) => {
+    res.send('¡Conexión segura establecida con HTTPS!');
+});
+
+// Importas tus rutas existentes
+// app.use('/', require('./routes/routes'));
+
 
 
 const PORT = 3000;
@@ -101,6 +118,11 @@ app.use((req, res, next) => {
 
 app.use(manejadorErrores);
 
-app.listen(PORT, () => {
+/*app.listen(PORT, () => {
     console.log(`Servidorsin express corriendo en http://localhost:${PORT}`);
+});*/
+
+https.createServer(opciones, app).listen(8082, () => {
+    console.log("Servidor Express Seguro corriendo en puerto 8082");
 });
+
