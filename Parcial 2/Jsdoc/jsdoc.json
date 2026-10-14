@@ -1,0 +1,11 @@
+{
+  "source": {
+    "include": ["Figuras.js"],
+    "includePattern": ".+\\.js$"
+  },
+  "opts": {
+    "destination": "./out",
+    "template": "node_modules/better-docs",
+    "recurse": false
+  }
+}
