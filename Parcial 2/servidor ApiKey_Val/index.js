@@ -3,6 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
 const manejadorErrores = require('./middlewares/errores');
+const configurarOpenAPI = require('./swagger');
 const https= require ('https');
 const fs = require('fs');
 // const authBasica = require('./middlewares/auth');
@@ -15,16 +16,10 @@ const opciones = {
 };
 const app = express();
 
-
-
-app.get('/', (req, res) => {
-    res.send('¡Conexión segura establecida con HTTPS!');
-});
+configurarOpenAPI(app);
 
 // Importas tus rutas existentes
 // app.use('/', require('./routes/routes'));
-
-
 
 const PORT = 3000;
 const apiKeyPermitida = process.env.API_KEY?.trim();
@@ -55,6 +50,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // app.use(authBasica);
 app.use(validarApiKey);
+
+app.get('/', (req, res) => {
+    res.send('¡Conexión segura establecida con HTTPS!');
+});
 
 app.use(morgan((tokens, req, res) => {
     //obtenr fecha
@@ -125,4 +124,3 @@ app.use(manejadorErrores);
 https.createServer(opciones, app).listen(8082, () => {
     console.log("Servidor Express Seguro corriendo en puerto 8082");
 });
-
