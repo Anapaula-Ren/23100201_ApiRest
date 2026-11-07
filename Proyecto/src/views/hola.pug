@@ -10,71 +10,28 @@ html
       p
         a(href='/api-docs') Abrir documentación interactiva (Swagger)
       p
-        a(href='/api-reference') Abrir documentación interactiva (RapiDoc)
-      p
-        a(href='/jsdoc/') Abrir documentación del código (JSDoc)
-      p
       input(type='password', id='apiKey', placeholder='API key')
-      p(id='mensaje')
-      h3= titulo2
-        button(type='button', id='consultarRecetas')= ruta1
-
-        form(id='formReceta')
-          label(for='idReceta') Ingresa un ID de receta:
-          input(type='number', id='idReceta', name='idReceta', min='1', placeholder='Ej. 1')
-        button(type='submit') Consultar
-    main(id='paginaRespuesta', hidden)
+      p= titulo2
+      button(type='button', id='consultarRecetas')= ruta1
       pre(id='respuestaJson')
 
     script.
-      const formReceta = document.getElementById('formReceta');
-      const inputReceta = document.getElementById('idReceta');
       const inputApiKey = document.getElementById('apiKey');
-      const mensaje = document.getElementById('mensaje');
-      const vista = document.getElementById('vista');
-      const paginaRespuesta = document.getElementById('paginaRespuesta');
       const respuestaJson = document.getElementById('respuestaJson');
 
-      function mostrarRespuesta(datos) {
-        const estadoRespuesta = { mostrandoRespuesta: true };
-        if (history.state?.mostrandoRespuesta) {
-          history.replaceState(estadoRespuesta, '', window.location.href);
-        } else {
-          history.pushState(estadoRespuesta, '', window.location.href);
-        }
-        respuestaJson.textContent = JSON.stringify(datos, null, 2);
-        vista.hidden = true;
-        paginaRespuesta.hidden = false;
-      }
-
-      window.addEventListener('popstate', (event) => {
-        const mostrarJson = event.state?.mostrandoRespuesta === true;
-        vista.hidden = mostrarJson;
-        paginaRespuesta.hidden = !mostrarJson;
-      });
-
-      async function consultar(url) {
-        mensaje.textContent = '';
+      document.getElementById('consultarRecetas').addEventListener('click', async () => {
         try {
-          const respuesta = await fetch(url, {
+          const respuesta = await fetch('/recetas', {
             headers: { 'x-api-key': inputApiKey.value.trim() }
           });
           const datos = await respuesta.json();
-          mostrarRespuesta(datos);
+
+          if (!respuesta.ok) {
+            throw new Error(datos.error?.mensaje || datos.mensaje || 'Error al consultar la API');
+          }
+
+          respuestaJson.textContent = JSON.stringify(datos, null, 2);
         } catch (error) {
-          mostrarRespuesta({ mensaje: error.message });
-        }
-      }
-
-      document.getElementById('consultarRecetas').addEventListener('click', () => {
-        consultar('/recetas');
-      });
-
-      formReceta.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const id = inputReceta.value.trim();
-
-        if (id) {
-          consultar(`/recetas/${id}`);
+          respuestaJson.textContent = JSON.stringify({ mensaje: error.message }, null, 2);
         }
       });

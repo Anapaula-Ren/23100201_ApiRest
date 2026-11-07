@@ -6,8 +6,7 @@ const router = Router();
 
 router.use('/', swaggerUi.serve, swaggerUi.setup(openapiSpec, {
     swaggerOptions: {
-        docExpansion: 'none',
-        defaultModelsExpandDepth: 1
+        docExpansion: 'none'
     }
 }));
 

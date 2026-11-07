@@ -4,44 +4,33 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import recetasRouter from './router/recetasRouter.js';
 import swaggerRouter from './documentation/swaggerRouter.js';
-import rapidocRouter from './documentation/rapidocRouter.js';
-import openapiRouter from './documentation/openapiRouter.js';
-import { horarioLaboral } from './middleware/horarioLaboral.js';
-import { accesos, morgan } from './middleware/logDeAccesos.js';
+import { registrarAcceso } from './middleware/logDeAccesos.js';
 import { guardarMetadata, upload } from './middleware/subirArchivos.js';
 import controlErrores from './middleware/controlErrores.js';
-import { apiKeyMiddleware } from './middleware/apiKeyMiddleware.js';
+import { crearApiKeyMiddleware } from './middleware/apiKeyMiddleware.js';
 import 'dotenv/config';
 import fs from 'fs';
 
+const apiKeyPermitida = process.env.API_KEY?.trim();
+const apiKeyMiddleware = crearApiKeyMiddleware(apiKeyPermitida);
 const app = express();
 
 // Estos son middlewares de aplicación que se ejecuta antes de las rutas
 app.use(express.json());
-app.use(
-    '/swagger-assets',
-    express.static(fileURLToPath(new URL('./assets', import.meta.url)))
-);
 
 // Documentación de la API
 app.use('/api-docs', swaggerRouter);
-app.use('/api-reference', rapidocRouter);
-app.use('/api-spec', openapiRouter);
-app.use(
-    '/jsdoc',
-    express.static(fileURLToPath(new URL('../docs', import.meta.url)))
-);
 app.use('/uploads', express.static('uploads'));
-app.use(morgan(':remote-addr - :remote-user [:local-date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', { stream: accesos }));
-app.use(horarioLaboral);
+app.use(registrarAcceso);
 
 // Vistas
 app.set('view engine', 'pug');
-app.set('views', './src/views');
+app.set('views', fileURLToPath(new URL('./views', import.meta.url)));
 
 app.get('/', (req, res) => {
     res.render('hola', 
         {   
+            titulo: 'API REST de Recetas',
             titulo1: '¡API de Recetas funcionando!', 
             mensaje: 'Hecho por: Anapaula Rendón',
             titulo2: 'Rutas de consulta:',

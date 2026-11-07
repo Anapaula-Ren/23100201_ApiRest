@@ -3,6 +3,15 @@ import fs from 'fs';
 import { accessLogPath } from './logPaths.js';
 
 const accesos = fs.createWriteStream(accessLogPath, { flags: 'a' });
+const formatoAcceso = (tokens, req, res) => [
+    `[${tokens['local-date'](req, res)}]`,
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    '-',
+    tokens['response-time'](req, res),
+    'ms'
+].join(' ');
 
 morgan.token('local-date', () => {
     const fecha = new Date();
@@ -15,4 +24,13 @@ morgan.token('local-date', () => {
     return `${pad(fecha.getDate())}/${pad(fecha.getMonth() + 1)}/${fecha.getFullYear()}:${pad(fecha.getHours())}:${pad(fecha.getMinutes())}:${pad(fecha.getSeconds())} ${signo}${horasOffset}${minutosOffset}`;
 });
 
-export { accesos, morgan };
+const registrarAcceso = morgan(formatoAcceso, {
+    stream: {
+        write: linea => {
+            process.stdout.write(linea);
+            accesos.write(linea);
+        }
+    }
+});
+
+export { registrarAcceso };

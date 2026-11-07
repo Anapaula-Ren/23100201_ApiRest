@@ -108,8 +108,6 @@ const obtenerId = (req, res, next) => {
  *         description: Parámetros de consulta inválidos.
  *       '401':
  *         description: API key inválida o faltante.
- *       '503':
- *         description: Fuera del horario de servicio.
  */
 router.get('/', (req, res) => {
     const { error, value } = validarReceta.query.validate(req.query, {
