@@ -1,0 +1,17 @@
+doctype html
+html
+  head
+    title Formulario
+  body
+    h1 Formulario
+    form(action='/formulario' method='POST')
+      label(for='nombre') Nombre
+      input#nombre(type='text' name='nombre' required)
+      label(for='edad') Edad
+      input#edad(type='number' name='edad' required)
+      button(type='submit') Enviar
+
+    if errores
+      ul
+        each error in errores
+          li= error.msg

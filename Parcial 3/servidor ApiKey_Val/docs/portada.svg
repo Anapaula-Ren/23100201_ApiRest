@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="180" viewBox="0 0 960 180" role="img" aria-labelledby="title description">
+  <title id="title">API REST con autenticación por API Key</title>
+  <desc id="description">Portada de la documentación: HTTPS, Express y OpenAPI 3.0.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#102a43"/>
+      <stop offset="1" stop-color="#176b87"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="180" rx="18" fill="url(#background)"/>
+  <circle cx="832" cy="90" r="76" fill="#ffffff" opacity=".08"/>
+  <circle cx="832" cy="90" r="54" fill="#ffffff" opacity=".08"/>
+  <text x="54" y="72" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">API REST</text>
+  <text x="56" y="110" fill="#d9f3ff" font-family="Segoe UI, Arial, sans-serif" font-size="20">Autenticación por API Key · HTTPS · OpenAPI 3.0</text>
+  <text x="56" y="145" fill="#a9dce9" font-family="Segoe UI, Arial, sans-serif" font-size="15">Documentación interactiva · Puerto 8082 · Versión 1.0.0</text>
+  <path d="M832 54v72M796 90h72" stroke="#fff" stroke-linecap="round" stroke-width="8" opacity=".8"/>
+</svg>

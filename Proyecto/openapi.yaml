@@ -1,0 +1,286 @@
+openapi: 3.0.3
+info:
+  title: API REST de Gestión de Recetas
+  version: 1.0.0
+  description: "![Portada de la API REST de
+    recetas](/swagger-assets/swagger-cover.svg)\r
+
+    \r
+
+    ## API REST de Gestión de Recetas\r
+
+    \r
+
+    Consulta, filtra y administra recetas mediante `GET /recetas`,\r
+
+    `GET /recetas/{id}`, `POST /recetas` y `PUT /recetas/{id}`. Las recetas\r
+
+    incluyen ingredientes, pasos, tiempo de preparación, categoría e imagen.\r
+
+    \r
+
+    ### Autenticación\r
+
+    \r
+
+    Las rutas de recetas y carga de imágenes requieren una API key. Pulsa\r
+
+    **Authorize** y escribe el valor de `API_KEY` configurado en `.env`; Swagger
+    lo\r
+
+    enviará en el encabezado `x-api-key`.\r
+
+    \r
+
+    ### Horario del servicio\r
+
+    \r
+
+    El servidor acepta solicitudes de lunes a sábado, de 06:00 a 19:59, según
+    su\r
+
+    hora local. Fuera de ese horario responde con HTTP `503`."
+servers:
+  - url: https://localhost:3000
+    description: Servidor local
+paths:
+  /recetas:
+    get:
+      tags:
+        - Recetas
+      summary: Listar y filtrar recetas
+      description: Filtra el catálogo por nombre parcial, categoría y tiempo máximo de
+        preparación.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: nombre
+          in: query
+          schema:
+            type: string
+          description: Coincidencia parcial, sin distinguir mayúsculas.
+          example: pastel
+        - name: categoria
+          in: query
+          schema:
+            type: string
+          example: postres
+        - name: tiempoMax
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: Tiempo de preparación máximo en minutos.
+          example: 30
+      responses:
+        "200":
+          description: Recetas encontradas; devuelve una lista vacía si no hay
+            coincidencias.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Receta"
+        "400":
+          description: Parámetros de consulta inválidos.
+        "401":
+          description: API key inválida o faltante.
+        "503":
+          description: Fuera del horario de servicio.
+    post:
+      tags:
+        - Recetas
+      summary: Crear una receta
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecetaEntrada"
+      responses:
+        "201":
+          description: Receta creada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Receta"
+        "400":
+          description: Cuerpo de petición inválido.
+        "401":
+          description: API key inválida o faltante.
+  /recetas/{id}:
+    get:
+      tags:
+        - Recetas
+      summary: Buscar receta por ID
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Receta encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Receta"
+        "400":
+          description: El ID no es válido.
+        "401":
+          description: API key inválida o faltante.
+        "404":
+          description: Receta no encontrada.
+    put:
+      tags:
+        - Recetas
+      summary: Actualizar una receta
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecetaEntrada"
+      responses:
+        "200":
+          description: Receta actualizada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Receta"
+        "400":
+          description: ID o cuerpo de petición inválido.
+        "401":
+          description: API key inválida o faltante.
+        "404":
+          description: Receta no encontrada.
+  /subir:
+    post:
+      tags:
+        - Imágenes
+      summary: Subir una imagen de receta
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - archivo
+              properties:
+                archivo:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Imagen guardada en uploads.
+        "400":
+          description: No se envió un archivo.
+        "401":
+          description: API key inválida o faltante.
+  /uploads/{nombre}:
+    get:
+      tags:
+        - Imágenes
+      summary: Obtener una imagen subida
+      parameters:
+        - name: nombre
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Archivo de imagen.
+        "404":
+          description: Imagen no encontrada.
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Usa el valor configurado en la variable de entorno API_KEY.
+  schemas:
+    RecetaEntrada:
+      type: object
+      required:
+        - nombre
+        - categoria
+        - tiempoPreparacion
+        - ingredientes
+        - pasos
+      properties:
+        nombre:
+          type: string
+          example: Sopa de verduras
+        categoria:
+          type: string
+          example: platillos
+        tiempoPreparacion:
+          type: integer
+          minimum: 1
+          example: 35
+        ingredientes:
+          type: array
+          items:
+            type: string
+          example:
+            - zanahoria
+            - papa
+            - calabacita
+        pasos:
+          type: array
+          items:
+            type: string
+          example:
+            - Lava y corta las verduras
+            - Cuécelas hasta que estén suaves
+        imagenUrl:
+          type: string
+          nullable: true
+          example: /uploads/sopa-verduras.jpg
+    Receta:
+      allOf:
+        - $ref: "#/components/schemas/RecetaEntrada"
+        - type: object
+          required:
+            - id
+            - imagenUrl
+          properties:
+            id:
+              type: integer
+              example: 1
+            imagenUrl:
+              type: string
+              nullable: true
+            _links:
+              type: object
+              description: Enlaces HATEOAS self, categoria y, cuando existe, imagen.
+    Error:
+      type: object
+      required:
+        - mensaje
+      properties:
+        mensaje:
+          type: string
+          example: Receta no encontrada
+tags:
+  - name: Recetas
+    description: Consulta, filtrado y administración de recetas.
