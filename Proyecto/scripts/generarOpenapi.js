@@ -11,10 +11,10 @@ export function generarOpenapi() {
                 version: '1.0.0',
                 description: 'API para consultar, filtrar y administrar recetas.'
             },
-            servers: [{
-                url: `https://localhost:${process.env.PORT || 3000}`,
-                description: 'Servidor local'
-            }]
+           servers: [{
+                url: '/',
+                description: 'Servidor actual (local o producción)'
+           }]
         },
         apis: [
             fileURLToPath(new URL('../src/router/recetasRouter.js', import.meta.url)),

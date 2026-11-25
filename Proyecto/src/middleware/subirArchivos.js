@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 const metadataPath = './metadata.json';
+fs.mkdirSync('uploads', { recursive: true });
 
 const storage = multer.diskStorage({
     destination: 'uploads/',
