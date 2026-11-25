@@ -4,36 +4,6 @@ import { validarReceta } from '../middleware/validarMiddleware.js';
 
 const router = express.Router();
 
-const recetas = [
-    {
-        id: 1,
-        nombre: 'Pastel de chocolate',
-        categoria: 'postres',
-        tiempoPreparacion: 60,
-        ingredientes: ['harina', 'azúcar', 'cacao', 'huevos', 'mantequilla'],
-        pasos: ['Mezcla los ingredientes', 'Hornea durante 40 minutos'],
-        imagenUrl: null
-    },
-    {
-        id: 2,
-        nombre: 'Agua de jamaica',
-        categoria: 'bebidas',
-        tiempoPreparacion: 20,
-        ingredientes: ['flor de jamaica', 'agua', 'azúcar'],
-        pasos: ['Hierve la flor', 'Cuela y endulza al gusto'],
-        imagenUrl: null
-    },
-    {
-        id: 3,
-        nombre: 'Tacos de frijoles',
-        categoria: 'platillos',
-        tiempoPreparacion: 25,
-        ingredientes: ['tortillas', 'frijoles', 'cebolla', 'cilantro'],
-        pasos: ['Calienta los frijoles', 'Sirve en tortillas calientes'],
-        imagenUrl: null
-    }
-];
-
 const crearRecurso = (req, receta) => {
     const origen = `${req.protocol}://${req.get('host')}`;
     const recurso = halson(receta)
