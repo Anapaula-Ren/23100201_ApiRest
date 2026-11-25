@@ -48,6 +48,49 @@ const obtenerId = (req, res, next) => {
     next();
 };
 
+/**
+ * @swagger
+ * /recetas:
+ *   get:
+ *     tags:
+ *       - Recetas
+ *     summary: Listar y filtrar recetas
+ *     description: Filtra el catálogo por nombre parcial, categoría y tiempo máximo de preparación.
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - name: nombre
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Coincidencia parcial, sin distinguir mayúsculas.
+ *         example: pastel
+ *       - name: categoria
+ *         in: query
+ *         schema:
+ *           type: string
+ *         example: postres
+ *       - name: tiempoMax
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Tiempo de preparación máximo en minutos.
+ *         example: 30
+ *     responses:
+ *       '200':
+ *         description: Recetas encontradas; devuelve una lista vacía si no hay coincidencias.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Receta'
+ *       '400':
+ *         description: Parámetros de consulta inválidos.
+ *       '401':
+ *         description: API key inválida o faltante.
+ */
 router.get('/', async (req, res, next) => {
     try {
         const { error, value } = validarReceta.query.validate(req.query, {
@@ -88,6 +131,33 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * /recetas:
+ *   post:
+ *     tags:
+ *       - Recetas
+ *     summary: Crear una receta
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RecetaEntrada'
+ *     responses:
+ *       '201':
+ *         description: Receta creada.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Receta'
+ *       '400':
+ *         description: Cuerpo de petición inválido.
+ *       '401':
+ *         description: API key inválida o faltante.
+ */
 router.post('/', validarReceta.body, async (req, res, next) => {
     try {
         const { nombre, categoria, tiempoPreparacion, ingredientes, pasos, imagenUrl } = req.body;
@@ -112,6 +182,35 @@ router.post('/', validarReceta.body, async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * /recetas/{id}:
+ *   get:
+ *     tags:
+ *       - Recetas
+ *     summary: Buscar receta por ID
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Receta encontrada.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Receta'
+ *       '400':
+ *         description: El ID no es válido.
+ *       '404':
+ *         description: Receta no encontrada.
+ *       '401':
+ *         description: API key inválida o faltante.
+ */
 router.get('/:id', obtenerId, async (req, res, next) => {
     try {
         const [filas] = await pool.query('SELECT * FROM recetas WHERE id = ?', [req.recetaId]);
@@ -128,6 +227,41 @@ router.get('/:id', obtenerId, async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * /recetas/{id}:
+ *   put:
+ *     tags:
+ *       - Recetas
+ *     summary: Actualizar una receta
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RecetaEntrada'
+ *     responses:
+ *       '200':
+ *         description: Receta actualizada.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Receta'
+ *       '400':
+ *         description: ID o cuerpo de petición inválido.
+ *       '404':
+ *         description: Receta no encontrada.
+ *       '401':
+ *         description: API key inválida o faltante.
+ */
 router.put('/:id', obtenerId, validarReceta.body, async (req, res, next) => {
     try {
         const [existentes] = await pool.query('SELECT * FROM recetas WHERE id = ?', [req.recetaId]);
@@ -162,5 +296,43 @@ router.put('/:id', obtenerId, validarReceta.body, async (req, res, next) => {
         next(err);
     }
 });
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Recetas
+ *     description: Consulta, filtrado y administración de recetas.
+ * components:
+ *   securitySchemes:
+ *     ApiKeyAuth:
+ *       type: apiKey
+ *       in: header
+ *       name: x-api-key
+ *       description: Usa el valor configurado en la variable de entorno API_KEY.
+ *   schemas:
+ *     RecetaEntrada:
+ *       type: object
+ *       required:
+ *         - nombre
+ *         - categoria
+ *         - tiempoPreparacion
+ *         - ingredientes
+ *         - pasos
+ *       properties:
+ *         nombre:
+ *           type: string
+ *           example: Sopa de verduras
+ *         categoria:
+ *           type: string
+ *           example: platillos
+ *         tiempoPreparacion:
+ *           type: integer
+ *           minimum: 1
+ *           example: 35
+ *         ingredientes:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: [ "1 taza de caldo", "1 cebolla", "2 dientes de ajo" ]*/
 
 export default router;

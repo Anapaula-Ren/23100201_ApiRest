@@ -1,4 +1,6 @@
 import express from 'express';
+import https from 'https';
+import fs from 'fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import recetasRouter from './router/recetasRouter.js';
@@ -16,7 +18,7 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(express.json());
 
-// Documentación y archivos estáticos
+// Documentación de la API y archivos estáticos
 app.use('/api-docs', swaggerRouter);
 app.use('/uploads', express.static('uploads'));
 app.use(registrarAcceso);
@@ -35,6 +37,35 @@ app.get('/', (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /subir:
+ *   post:
+ *     tags:
+ *       - Imágenes
+ *     summary: Subir una imagen de receta
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - archivo
+ *             properties:
+ *               archivo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       '200':
+ *         description: Imagen guardada en uploads.
+ *       '400':
+ *         description: No se envió un archivo.
+ *       '401':
+ *         description: API key inválida o faltante.
+ */
 app.post('/subir', apiKeyMiddleware, upload.single('archivo'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({
@@ -51,6 +82,27 @@ app.post('/subir', apiKeyMiddleware, upload.single('archivo'), (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /uploads/{nombre}:
+ *   get:
+ *     tags:
+ *       - Imágenes
+ *     summary: Obtener una imagen subida
+ *     parameters:
+ *       - name: nombre
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Archivo de imagen.
+ *       '404':
+ *         description: Imagen no encontrada.
+ */
+
+// Aquí se invocan las rutas
 app.use('/recetas', apiKeyMiddleware, recetasRouter);
 
 app.use((req, res, next) => {
@@ -63,9 +115,21 @@ app.use(controlErrores);
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
     const port = process.env.PORT || 3000;
-    app.listen(port, '0.0.0.0', () => {
-        console.log(`Servidor escuchando en el puerto ${port}`);
-    });
+
+    if (process.env.RAILWAY_ENVIRONMENT) {
+        app.listen(port, '0.0.0.0', () => {
+            console.log(`Servidor escuchando en Railway en el puerto ${port}`);
+        });
+    } else {
+        const options = {
+            key: fs.readFileSync('./ssl/server.key'),
+            cert: fs.readFileSync('./ssl/server.crt')
+        };
+
+        https.createServer(options, app).listen(port, () => {
+            console.log(`Servidor escuchando en https://localhost:${port}`);
+        });
+    }
 }
 
 export default app;
