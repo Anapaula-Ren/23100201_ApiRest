@@ -1,7 +1,7 @@
 # API REST de Recetas
 
 API de recetas creada con Node.js y Express. Incluye autenticación por API key,
-validación con Joi, carga de imágenes y documentación interactiva con Swagger.
+validación con Joi, carga de imágenes y documentación interactiva con Scalar.
 
 ## Iniciar el servidor
 
@@ -39,8 +39,8 @@ Las rutas de recetas y carga de imágenes requieren el encabezado
 | `POST` | `/subir` | Sube una imagen usando el campo `archivo`. |
 | `GET` | `/uploads/:nombre` | Obtiene una imagen subida. |
 
-Swagger muestra los parámetros y respuestas de cada ruta en `/api-docs`.
-Para consultar una receta por ID, abre `GET /recetas/{id}` en Swagger,
+Scalar muestra los parámetros y respuestas de cada ruta en `/api-docs`.
+Para consultar una receta por ID, abre `GET /recetas/{id}` en Scalar,
 autoriza la API key y usa el ID en el campo del parámetro. Por ejemplo, el ID
 `4` corresponde a `/recetas/4`; no escribas los dos puntos ni las llaves.
 

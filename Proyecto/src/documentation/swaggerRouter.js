@@ -1,13 +1,11 @@
 import { Router } from 'express';
-import swaggerUi from 'swagger-ui-express';
+import { apiReference } from '@scalar/express-api-reference';
 import openapiSpec from '../../scripts/generarOpenapi.js';
 
 const router = Router();
 
-router.use('/', swaggerUi.serve, swaggerUi.setup(openapiSpec, {
-    swaggerOptions: {
-        docExpansion: 'none'
-    }
+router.use('/', apiReference({
+    content: openapiSpec
 }));
 
 export default router;

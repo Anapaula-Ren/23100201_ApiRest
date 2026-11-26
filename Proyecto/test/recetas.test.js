@@ -7,11 +7,11 @@ process.env.API_KEY = 'test-api-key';
 
 const { default: app } = await import('../src/index.js');
 
-test('GET /api-docs sirve la documentación Swagger', async () => {
+test('GET /api-docs sirve la documentación Scalar', async () => {
     const respuesta = await request(app).get('/api-docs/');
 
     assert.equal(respuesta.status, 200);
-    assert.match(respuesta.text, /swagger-ui/);
+    assert.match(respuesta.text, /<title>Scalar API Reference<\/title>/);
 });
 
 test('la página principal conserva el botón para consultar el catálogo completo', async () => {
