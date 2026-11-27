@@ -2,3 +2,6 @@ node_modules/
 .env
 docs/
 logs/
+uploads/
+metadata.json
+ssl/
